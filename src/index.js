@@ -1,13 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React, {useState} from 'react'
+import ReactDOM from 'react-dom'
+import UserContext from './context'
+import 'normalize.css'
+import '@fontsource/roboto';
+import './index.scss'
+import App from './App'
+import reportWebVitals from './reportWebVitals'
+
+function Main() {
+  const [user, setUser] = useState({
+    isLoggedIn: false,
+    userName: null,
+    email: null,
+    ballance: null,
+    token: null,
+  })
+  return (    
+    <React.StrictMode> 
+      <UserContext.Provider value={{user, setUser}}>
+        <App />
+      </UserContext.Provider>    
+    </React.StrictMode>
+  )
+}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Main />,
   document.getElementById('root')
 );
 
