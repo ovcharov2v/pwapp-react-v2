@@ -6,7 +6,11 @@ import api from '../api'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-
+    margin: 'auto',
+    padding: theme.spacing(4),
+    width: 300,
+    border: '1px solid #eee',
+    borderRadius: 16,
   },
   form: {
     display: 'flex',
@@ -28,11 +32,11 @@ const LoginPage = () => {
   const [formState, setFormState] = useState({
     responseMessage: '',
     email: {
-      value: '',
+      value: 'victor@mail.com',
       error: ''
     },
     password: {
-      value: '',
+      value: 'password',
       error: ''
     }
   })
@@ -101,11 +105,13 @@ const LoginPage = () => {
       })
     })
       .then((res) => {
-        if (res.ok) {
-          const newUser = { ...user }
-          newUser.isLoggedIn = true
-          newUser.token = res.id_token
-          setUser({ ...newUser })
+        if (res.ok) {          
+          res.json().then((json)=>{
+            const newUser = { ...user }
+            newUser.isLoggedIn = true
+            newUser.token = json.id_token
+            setUser({ ...newUser })         
+          })          
         }
         else {
           res.text().then((text)=>{
@@ -117,7 +123,7 @@ const LoginPage = () => {
 
   return (
     <div className="container">
-      <Box m={'auto'} p={4} border={1} borderRadius={16} borderColor="grey.300" width={300}>
+      <Box className={classes.root}>
         <h1>Login page</h1>
         <Box color="error.main" className={classes.responseError}>          
           {formState.responseMessage}

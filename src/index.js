@@ -10,9 +10,10 @@ import reportWebVitals from './reportWebVitals'
 function Main() {
   const [user, setUser] = useState({
     isLoggedIn: false,
+    id: null,
     userName: null,
     email: null,
-    ballance: null,
+    balance: null,
     token: null,
   })
   return (    
