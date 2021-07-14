@@ -32,11 +32,11 @@ const LoginPage = () => {
   const [formState, setFormState] = useState({
     responseMessage: '',
     email: {
-      value: 'victor@mail.com',
+      value: 'userx@test.com',
       error: ''
     },
     password: {
-      value: 'password',
+      value: '12341234',
       error: ''
     }
   })

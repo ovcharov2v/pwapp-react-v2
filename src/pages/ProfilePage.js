@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react'
 import UserContext from '../context'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box } from '@material-ui/core/'

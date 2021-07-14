@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import UserContext from '../context'
 import { Link as RouterLink } from 'react-router-dom'
@@ -35,48 +35,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const AuthMenu = () => {
-  const classes = useStyles()
-  return (
-    <React.Fragment>
-      <Link
-        component={RouterLink}
-        color="inherit"
-        className={classes.menuLink}
-        to="login"
-      >
-        Login
-      </Link>
-      <Link
-        component={RouterLink}
-        color="inherit"
-        className={classes.menuLink}
-        to="register"
-      >
-        Register
-      </Link>
-    </React.Fragment>
-  )
-}
-
-const UserMenu = () => {
-  const classes = useStyles()
-  return (
-    <React.Fragment>
-      <Link
-        color="inherit"
-        className={classes.menuLink}
-        href="#"
-      >
-        Logout
-      </Link>      
-    </React.Fragment>
-  )
-}
-
 const MenuComponent = () => {
   const classes = useStyles()
-  const {user, setUser} = useContext(UserContext)
+  const { user, setUser } = useContext(UserContext)
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
@@ -87,16 +48,68 @@ const MenuComponent = () => {
     setOpen(false);
   };
 
+  const logout = (e) => {
+    e.preventDefault()
+    setUser({
+      isLoggedIn: false,
+      id: null,
+      userName: null,
+      email: null,
+      balance: null,
+      token: null,
+    })
+  }
+
+  const AuthMenu = () => {
+    const classes = useStyles()
+    return (
+      <React.Fragment>
+        <Link
+          component={RouterLink}
+          color="inherit"
+          className={classes.menuLink}
+          to="login"
+        >
+          Login
+        </Link>
+        <Link
+          component={RouterLink}
+          color="inherit"
+          className={classes.menuLink}
+          to="register"
+        >
+          Register
+        </Link>
+      </React.Fragment>
+    )
+  }
+
+  const UserMenu = () => {
+    const classes = useStyles()
+    return (
+      <React.Fragment>
+        <Link
+          color="inherit"
+          className={classes.menuLink}
+          href="#"
+          onClick={logout}
+        >
+          Logout
+        </Link>
+      </React.Fragment>
+    )
+  }
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
           {user.isLoggedIn &&
             <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
             >
               <MenuIcon />
             </IconButton>
@@ -107,7 +120,7 @@ const MenuComponent = () => {
           {user.isLoggedIn
             ? <UserMenu />
             : <AuthMenu />
-          }          
+          }
         </Toolbar>
       </AppBar>
       <Drawer
@@ -118,7 +131,7 @@ const MenuComponent = () => {
         <div className={classes.drawer}>
           <IconButton onClick={handleDrawerClose}>
             <ChevronLeftIcon />
-          </IconButton>          
+          </IconButton>
           <Divider />
           <ul className={classes.menuList}>
             <li className={classes.menuItem}>
