@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import UserContext from '../context'
-import { Link as RouterLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { Drawer, Typography, Link, AppBar, Toolbar, IconButton, Divider } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -30,9 +30,15 @@ const useStyles = makeStyles((theme) => ({
   drawerMenuLink: {
     textDecoration: 'none'
   },
+  drawerMenuLinkActive: {
+    textDecoration: 'underline'
+  },
   menuLink: {
     marginLeft: theme.spacing(2),
-  }
+  },
+  menuLinkActive: {
+    textDecoration: 'underline'
+  },
 }));
 
 const MenuComponent = () => {
@@ -58,6 +64,7 @@ const MenuComponent = () => {
       balance: null,
       token: null,
     })
+    localStorage.removeItem('token')
   }
 
   const AuthMenu = () => {
@@ -65,18 +72,20 @@ const MenuComponent = () => {
     return (
       <React.Fragment>
         <Link
-          component={RouterLink}
+          component={NavLink}
           color="inherit"
           className={classes.menuLink}
           to="login"
+          activeClassName={classes.menuLinkActive}
         >
           Login
         </Link>
         <Link
-          component={RouterLink}
+          component={NavLink}
           color="inherit"
           className={classes.menuLink}
           to="register"
+          activeClassName={classes.menuLinkActive}
         >
           Register
         </Link>
@@ -88,6 +97,7 @@ const MenuComponent = () => {
     const classes = useStyles()
     return (
       <React.Fragment>
+        <p>Hi {user.userName}, you have {user.balance} PW</p>
         <Link
           color="inherit"
           className={classes.menuLink}
@@ -136,30 +146,33 @@ const MenuComponent = () => {
           <ul className={classes.menuList}>
             <li className={classes.menuItem}>
               <Link
-                component={RouterLink}
+                component={NavLink}
                 color="inherit"
                 className={classes.drawerMenuLink}
                 to="profile"
+                activeClassName={classes.drawerMenuLinkActive}
               >
                 Profile
               </Link>
             </li>
             <li className={classes.menuItem}>
               <Link
-                component={RouterLink}
+                component={NavLink}
                 color="inherit"
                 className={classes.drawerMenuLink}
                 to="transaction"
+                activeClassName={classes.drawerMenuLinkActive}
               >
                 New transaction
               </Link>
             </li>
             <li className={classes.menuItem}>
               <Link
-                component={RouterLink}
+                component={NavLink}
                 color="inherit"
                 className={classes.drawerMenuLink}
                 to="history"
+                activeClassName={classes.drawerMenuLinkActive}
               >
                 Transaction list
               </Link>

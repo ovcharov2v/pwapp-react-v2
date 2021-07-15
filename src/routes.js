@@ -11,12 +11,8 @@ export const useRoutes = (isLoggedIn, getUserInfo) => {
     return (
       <Switch>
         <Route path="/profile" exact render={ (props) => <ProfilePage getUserInfo={getUserInfo} /> } />
-        <Route path="/transaction" exact>
-          <TransactionPage />
-        </Route>
-        <Route path="/history" exact>
-          <HistoryPage />
-        </Route>
+        <Route path="/transaction" exact component={TransactionPage} />
+        <Route path="/history" exact component={HistoryPage} />
         <Redirect to="/profile" />
       </Switch>
     )
@@ -24,12 +20,8 @@ export const useRoutes = (isLoggedIn, getUserInfo) => {
   else {
     return (
       <Switch>
-        <Route path="/login" exact>
-          <LoginPage />
-        </Route>
-        <Route path="/register" exact>
-          <RegisterPage />
-        </Route>      
+        <Route path="/login" exact component={LoginPage} />
+        <Route path="/register" exact component={RegisterPage} />     
         <Redirect to="/login" />
       </Switch>   
     ) 

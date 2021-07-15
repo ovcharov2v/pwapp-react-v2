@@ -110,7 +110,8 @@ const LoginPage = () => {
             const newUser = { ...user }
             newUser.isLoggedIn = true
             newUser.token = json.id_token
-            setUser({ ...newUser })         
+            setUser({ ...newUser })  
+            localStorage.setItem('token', json.id_token)       
           })          
         }
         else {

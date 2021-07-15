@@ -5,6 +5,9 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import Alert from '@material-ui/lab/Alert'
 import api from '../api'
 import UserContext from '../context'
+import queryString from 'query-string';
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const TransactionPage = () => {  
+const TransactionPage = ({location}) => {  
   const classes = useStyles()
   const { user, setUser } = useContext(UserContext)
 
@@ -44,6 +47,18 @@ const TransactionPage = () => {
     }
   }
   const [formState, setFormState] = useState(defaultFormState)  
+
+  useEffect(() => {
+    if(location.search.length > 0) {      
+      const parsed = queryString.parse(location.search);
+      const newState = {
+        ...formState
+      }
+      newState.name.value = parsed.name
+      newState.amount.value = parsed.amount
+      setFormState({ ...newState })
+    }
+  }, [])
 
   const getUsers = (e) => {
     const str = e.target.value
@@ -177,6 +192,7 @@ const TransactionPage = () => {
               newState.responseMessage = ''
               setFormState({ ...newState })
             }}
+            inputValue={formState.name.value}
             renderInput={(params) => (
               <TextField 
                 name="name"
@@ -188,8 +204,7 @@ const TransactionPage = () => {
                   handleChange(e)
                   getUsers(e)
                 }}
-                onBlur={validateName}                
-                value={formState.name.value}
+                onBlur={validateName}        
               />
             )}
           />

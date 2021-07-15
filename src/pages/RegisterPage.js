@@ -41,8 +41,13 @@ const RegisterPage = () => {
     password: {
       value: '',
       error: ''
+    },
+    repassword: {
+      value: '',
+      error: ''
     }
   })
+
 
   const handleChange = (e) => {
     const newState = {
@@ -94,6 +99,26 @@ const RegisterPage = () => {
     }
   }
 
+  const validateRePassword = (e) => {
+    const repasswordLength = formState.repassword.value.length
+    let repasswordError = '';
+
+    if (repasswordLength === 0) {
+      repasswordError = 'You must enter the password again'
+    }
+    else if (formState.repassword.value !== formState.password.value) {
+      repasswordError = 'Passwords don\'t match'
+    }
+
+    if (repasswordError.length > 0) {
+      const newState = {
+        ...formState
+      }
+      newState.repassword.error = repasswordError
+      setFormState({ ...newState })
+    }    
+  }
+
   const validateEmail = () => {
     let emailError = '';
 
@@ -134,7 +159,8 @@ const RegisterPage = () => {
             const newUser = { ...user }
             newUser.isLoggedIn = true
             newUser.token = json.id_token
-            setUser({ ...newUser })         
+            setUser({ ...newUser })      
+            localStorage.setItem('token', json.id_token)   
           }) 
         }
         else {
@@ -186,6 +212,16 @@ const RegisterPage = () => {
             helperText={formState.password.error}
             onChange={handleChange}
             onBlur={validatePassword}
+          />
+          <TextField
+            name="repassword"
+            className={classes.input}
+            label="Repeat password"
+            type="password"
+            error={formState.repassword.error.length > 0}
+            helperText={formState.repassword.error}
+            onChange={handleChange}
+            onBlur={validateRePassword}
           />
           <Button
             variant="contained"

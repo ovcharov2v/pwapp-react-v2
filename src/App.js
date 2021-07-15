@@ -1,14 +1,25 @@
 import './App.css';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import UserContext from './context'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { useRoutes } from './routes';
 import MenuComponent from './components/MenuComponent';
 import api from './api'
+import jwt_decode from "jwt-decode";
 
 function App() {
   const { user, setUser } = useContext(UserContext)
   const routes = useRoutes(user.isLoggedIn, getUserInfo);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if(token && jwt_decode(token).exp < Date.now()*1000) {
+      const newUser = { ...user }
+      newUser.isLoggedIn=true
+      newUser.token=token
+      setUser(newUser)   
+    }    
+  }, [])
 
   function getUserInfo() {
     fetch(api.userInfoUrl, {
