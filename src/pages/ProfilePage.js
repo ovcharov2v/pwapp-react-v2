@@ -1,8 +1,8 @@
-
 import React, { useContext, useEffect } from 'react'
 import UserContext from '../context'
 import { makeStyles } from '@material-ui/core/styles'
-import { Box } from '@material-ui/core/'
+import { Box, Button } from '@material-ui/core/'
+import { NavLink } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,6 +15,14 @@ const useStyles = makeStyles((theme) => ({
   row: {
     marginBottom: theme.spacing(2),
   },
+  links: {
+    display: 'flex',
+    margin: '0 -12px'
+  },
+  link: {
+    flexGrow: 1,
+    margin: '0 6px',
+  }
 }));
 
 const ProfilePage = ({ getUserInfo }) => {
@@ -26,15 +34,31 @@ const ProfilePage = ({ getUserInfo }) => {
   }, [])
 
   return (
-    <div className="container">
-      <Box className={classes.root}>
-        <h1>Profile page</h1>
-        <p className={classes.row}><strong>Id:</strong> {user.id}</p>
-        <p className={classes.row}><strong>User name:</strong> {user.userName}</p>
-        <p className={classes.row}><strong>Email:</strong> {user.email}</p>
-        <p className={classes.row}><strong>Balance:</strong> {user.balance}</p>
-      </Box>      
-    </div>
+    <Box className={classes.root}>
+      <h1>Profile page</h1>
+      <p className={classes.row}><strong>Id:</strong> {user.id}</p>
+      <p className={classes.row}><strong>User name:</strong> {user.userName}</p>
+      <p className={classes.row}><strong>Email:</strong> {user.email}</p>
+      <p className={classes.row}><strong>Balance:</strong> {user.balance}</p>
+      <div className={classes.links}>
+        <Button 
+          component={NavLink}
+          color="primary"
+          className={classes.link}
+          to="transaction"
+        >
+          New transaction
+        </Button>
+        <Button 
+          component={NavLink}
+          color="primary"
+          className={classes.link}
+          to="history"
+        >
+          Transaction list
+        </Button>
+      </div>
+    </Box>
   );
 }
 

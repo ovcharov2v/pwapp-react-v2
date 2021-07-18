@@ -7,8 +7,6 @@ import api from '../api'
 import UserContext from '../context'
 import queryString from 'query-string';
 
-
-
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: 'auto',
@@ -198,6 +196,7 @@ const TransactionPage = ({location}) => {
                 name="name"
                 {...params} 
                 label="User name" 
+                className={classes.input}
                 error={formState.name.error.length > 0}
                 helperText={formState.name.error}
                 onChange={(e)=>{

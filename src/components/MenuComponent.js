@@ -2,36 +2,17 @@ import React, { useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import UserContext from '../context'
 import { NavLink } from 'react-router-dom'
-import { Drawer, Typography, Link, AppBar, Toolbar, IconButton, Divider } from '@material-ui/core'
+import { Typography, Link, AppBar, Toolbar, IconButton } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import LeftMenu from './LeftMenu';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     marginBottom: theme.spacing(8),
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
   title: {
     flexGrow: 1,
-  },
-  drawer: {
-    padding: theme.spacing(2)
-  },
-  menuList: {
-    padding: 0,
-    listStyleType: 'none',
-  },
-  menuItem: {
-    marginBottom: theme.spacing(2),
-  },
-  drawerMenuLink: {
-    textDecoration: 'none'
-  },
-  drawerMenuLinkActive: {
-    textDecoration: 'underline'
   },
   menuLink: {
     marginLeft: theme.spacing(2),
@@ -44,18 +25,15 @@ const useStyles = makeStyles((theme) => ({
 const MenuComponent = () => {
   const classes = useStyles()
   const { user, setUser } = useContext(UserContext)
-  const [open, setOpen] = React.useState(false);
+  const [leftMenuOpen, setLeftMenuOpen] = React.useState(false);  
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  const toggleLeftMenu = () => {
+    setLeftMenuOpen(!leftMenuOpen)
+  }
 
   const logout = (e) => {
     e.preventDefault()
+    setLeftMenuOpen(false)
     setUser({
       isLoggedIn: false,
       id: null,
@@ -67,28 +45,26 @@ const MenuComponent = () => {
     localStorage.removeItem('token')
   }
 
+  const MenuLink = ({text, link}) => {
+    return (
+      <Link
+        component={NavLink}
+        color="inherit"
+        className={classes.menuLink}
+        to={link}
+        activeClassName={classes.menuLinkActive}
+      >
+        {text}
+      </Link>
+    )
+  }
+
   const AuthMenu = () => {
     const classes = useStyles()
     return (
       <React.Fragment>
-        <Link
-          component={NavLink}
-          color="inherit"
-          className={classes.menuLink}
-          to="login"
-          activeClassName={classes.menuLinkActive}
-        >
-          Login
-        </Link>
-        <Link
-          component={NavLink}
-          color="inherit"
-          className={classes.menuLink}
-          to="register"
-          activeClassName={classes.menuLinkActive}
-        >
-          Register
-        </Link>
+        <MenuLink text="Login" link="/login" />
+        <MenuLink text="Register" link="/register" />
       </React.Fragment>
     )
   }
@@ -118,7 +94,7 @@ const MenuComponent = () => {
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              onClick={handleDrawerOpen}
+              onClick={toggleLeftMenu}
               edge="start"
             >
               <MenuIcon />
@@ -133,53 +109,10 @@ const MenuComponent = () => {
           }
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        <div className={classes.drawer}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-          <Divider />
-          <ul className={classes.menuList}>
-            <li className={classes.menuItem}>
-              <Link
-                component={NavLink}
-                color="inherit"
-                className={classes.drawerMenuLink}
-                to="profile"
-                activeClassName={classes.drawerMenuLinkActive}
-              >
-                Profile
-              </Link>
-            </li>
-            <li className={classes.menuItem}>
-              <Link
-                component={NavLink}
-                color="inherit"
-                className={classes.drawerMenuLink}
-                to="transaction"
-                activeClassName={classes.drawerMenuLinkActive}
-              >
-                New transaction
-              </Link>
-            </li>
-            <li className={classes.menuItem}>
-              <Link
-                component={NavLink}
-                color="inherit"
-                className={classes.drawerMenuLink}
-                to="history"
-                activeClassName={classes.drawerMenuLinkActive}
-              >
-                Transaction list
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </Drawer>
+      <LeftMenu 
+        leftMenuOpen={leftMenuOpen}
+        toggleLeftMenu={toggleLeftMenu}
+      />
     </div>
   );
 }

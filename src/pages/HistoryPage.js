@@ -7,6 +7,10 @@ import UserContext from '../context'
 import { Link as RouterLink } from 'react-router-dom'
 
 const useStyles = makeStyles({
+  tableWrapper: {
+    maxWidth: 800,
+    margin: '0 auto',
+  },
   pageHeader: {
     marginBottom: 30,
     textAlign: 'center',
@@ -50,9 +54,9 @@ const HistoryPage = () => {
   }
 
   return ( 
-    <div className="container">
+    <>
       { transactionList.length > 0 &&
-        <>
+        <div className={classes.tableWrapper}>
           <h1 className={classes.pageHeader}>Transaction list</h1>
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
@@ -92,12 +96,12 @@ const HistoryPage = () => {
               </TableBody>
             </Table>
           </TableContainer>
-        </>
+        </div>
       }
       { transactionList.length === 0 &&
         <h2 className={classes.noTransactionMessage}>No transaction yet</h2>
       }
-    </div>
+    </>
    );
 }
  
