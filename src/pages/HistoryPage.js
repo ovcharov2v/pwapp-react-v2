@@ -1,10 +1,10 @@
-import React, {useContext, useState, useEffect} from 'react'
+import React, { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button} from '@material-ui/core/'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@material-ui/core/'
 import RepeatIcon from '@material-ui/icons/Repeat';
-import api from '../api'
-import UserContext from '../context'
+import { getTransactionList, setTransactionData } from '../store/slices/transaction'
 import { Link as RouterLink } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 
 const useStyles = makeStyles({
   tableWrapper: {
@@ -26,36 +26,17 @@ const useStyles = makeStyles({
 });
 
 const HistoryPage = () => {
-  const { user, setUser } = useContext(UserContext)
-  const [transactionList, setTransactionList] = useState([])
-  const classes = useStyles();
+  const classes = useStyles()
+  const dispatch = useDispatch()
+  const transactionList = useSelector((state) => state.transaction.transactionList)
 
-  useEffect(()=>{
-    getTransactionList()
+  useEffect(() => {
+    dispatch(getTransactionList())
   }, [])
 
-  const getTransactionList = () => {
-    fetch(api.transactionListUrl, {
-      headers: {
-        'Authorization': 'Bearer ' + user.token,
-      }
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((json)=>{          
-          setTransactionList(json.trans_token)
-        })
-      }
-      else {
-        res.text().then((text) => {
-          console.log(`Error: ${text}`)
-        })
-      }
-    })
-  }
-
-  return ( 
+  return (
     <>
-      { transactionList.length > 0 &&
+      {transactionList.length > 0 &&
         <div className={classes.tableWrapper}>
           <h1 className={classes.pageHeader}>Transaction list</h1>
           <TableContainer component={Paper}>
@@ -77,7 +58,7 @@ const HistoryPage = () => {
                     <TableCell align="right">{row.amount}</TableCell>
                     <TableCell align="right">{row.balance}</TableCell>
                     <TableCell align="right">
-                      { row.amount < 0 && 
+                      {row.amount < 0 &&
                         <Button
                           variant="contained"
                           color="primary"
@@ -85,7 +66,10 @@ const HistoryPage = () => {
                           className={classes.button}
                           startIcon={<RepeatIcon />}
                           component={RouterLink}
-                          to={'/transaction?name='+row.username+'&amount='+Math.abs(row.amount)}
+                          onClick={() => {
+                            dispatch(setTransactionData({ name: row.username, amount: Math.abs(row.amount) }))
+                          }}
+                          to={'/transaction'}
                         >
                           Repeat
                         </Button>
@@ -98,11 +82,11 @@ const HistoryPage = () => {
           </TableContainer>
         </div>
       }
-      { transactionList.length === 0 &&
+      {transactionList.length === 0 &&
         <h2 className={classes.noTransactionMessage}>No transaction yet</h2>
       }
     </>
-   );
+  );
 }
- 
+
 export default HistoryPage;

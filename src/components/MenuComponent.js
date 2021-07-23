@@ -1,10 +1,10 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import UserContext from '../context'
-import { NavLink } from 'react-router-dom'
 import { Typography, Link, AppBar, Toolbar, IconButton } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu';
 import LeftMenu from './LeftMenu';
+import {logout} from '../store/slices/auth'
+import {useDispatch, useSelector} from 'react-redux'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,51 +23,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MenuComponent = () => {
-  const classes = useStyles()
-  const { user, setUser } = useContext(UserContext)
-  const [leftMenuOpen, setLeftMenuOpen] = React.useState(false);  
+  const classes = useStyles()  
+  const dispatch = useDispatch()
+  const [isOpen, setIsOpen] = React.useState(false);  
+  const user = useSelector((state) => state.user)
+  const isLoggedIn = useSelector((state) => Boolean(state.auth.token))    
 
   const toggleLeftMenu = () => {
-    setLeftMenuOpen(!leftMenuOpen)
-  }
-
-  const logout = (e) => {
-    e.preventDefault()
-    setLeftMenuOpen(false)
-    setUser({
-      isLoggedIn: false,
-      id: null,
-      userName: null,
-      email: null,
-      balance: null,
-      token: null,
-    })
-    localStorage.removeItem('token')
-  }
-
-  const MenuLink = ({text, link}) => {
-    return (
-      <Link
-        component={NavLink}
-        color="inherit"
-        className={classes.menuLink}
-        to={link}
-        activeClassName={classes.menuLinkActive}
-      >
-        {text}
-      </Link>
-    )
-  }
-
-  const AuthMenu = () => {
-    const classes = useStyles()
-    return (
-      <React.Fragment>
-        <MenuLink text="Login" link="/login" />
-        <MenuLink text="Register" link="/register" />
-      </React.Fragment>
-    )
-  }
+    setIsOpen(!isOpen)
+  }   
 
   const UserMenu = () => {
     const classes = useStyles()
@@ -78,19 +42,19 @@ const MenuComponent = () => {
           color="inherit"
           className={classes.menuLink}
           href="#"
-          onClick={logout}
+          onClick={(e)=>{e.preventDefault();dispatch(logout())}}
         >
           Logout
         </Link>
       </React.Fragment>
     )
-  }
+  }  
 
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          {user.isLoggedIn &&
+          {isLoggedIn &&
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -103,14 +67,13 @@ const MenuComponent = () => {
           <Typography variant="h6" className={classes.title}>
             PWApp
           </Typography>
-          {user.isLoggedIn
-            ? <UserMenu />
-            : <AuthMenu />
+          {isLoggedIn &&
+            <UserMenu />
           }
         </Toolbar>
       </AppBar>
       <LeftMenu 
-        leftMenuOpen={leftMenuOpen}
+        isOpen={isOpen}
         toggleLeftMenu={toggleLeftMenu}
       />
     </div>

@@ -3,14 +3,13 @@ import { Switch, Route, Redirect } from 'react-router-dom'
 import ProfilePage from './pages/ProfilePage'
 import TransactionPage from './pages/TransactionPage'
 import HistoryPage from './pages/HistoryPage'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
+import AuthPage from './pages/AuthPage'
 
-export const useRoutes = (isLoggedIn, getUserInfo) => {
+export const useRoutes = (isLoggedIn) => {
   if(isLoggedIn) {
     return (
       <Switch>
-        <Route path="/profile" exact render={ (props) => <ProfilePage getUserInfo={getUserInfo} /> } />
+        <Route path="/profile" exact component={ProfilePage} />
         <Route path="/transaction" exact component={TransactionPage} />
         <Route path="/history" exact component={HistoryPage} />
         <Redirect to="/profile" />
@@ -20,9 +19,8 @@ export const useRoutes = (isLoggedIn, getUserInfo) => {
   else {
     return (
       <Switch>
-        <Route path="/login" exact component={LoginPage} />
-        <Route path="/register" exact component={RegisterPage} />     
-        <Redirect to="/login" />
+        <Route path="/auth" exact component={AuthPage} />    
+        <Redirect to="/auth" />
       </Switch>   
     ) 
   }

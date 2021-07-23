@@ -1,6 +1,6 @@
 const url = 'http://193.124.114.46:3001'
 
-const api = {
+const endpointList = {
   loginUrl: `${url}/sessions/create`,
   registerUrl: `${url}/users`,
   userInfoUrl: `${url}/api/protected/user-info`,
@@ -9,4 +9,4 @@ const api = {
   userListUrl: `${url}/api/protected/users/list`,
 }
 
-export default api
+export default endpointList

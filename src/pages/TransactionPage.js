@@ -1,87 +1,37 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import React, { useState, useMemo } from 'react'
+import WrapForm from '../components/hoc/WrapForm'
 import { Box, Button, TextField } from '@material-ui/core/'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Alert from '@material-ui/lab/Alert'
-import api from '../api'
-import UserContext from '../context'
-import queryString from 'query-string';
+import { useDispatch, useSelector } from 'react-redux'
+import { getUserList, newTransaction } from '../store/slices/transaction'
+import { validate } from '../validators/'
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    margin: 'auto',
-    padding: theme.spacing(4),
-    width: 300,
-    border: '1px solid #eee',
-    borderRadius: 16,
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  input: {
-    marginBottom: theme.spacing(4),
-  },
-  responseError: {
-    marginBottom: theme.spacing(4),
-  }
-}));
 
-const TransactionPage = ({location}) => {  
-  const classes = useStyles()
-  const { user, setUser } = useContext(UserContext)
 
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [userList, setUserList] = useState([])
+const TransactionPage = ({classes}) => {
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.user)
+  const transaction = useSelector((state) => state.transaction)
+
   const defaultFormState = {
-    responseMessage: '',
     name: {
-      value: '',
+      value: transaction.name || '',
       error: ''
     },
     amount: {
-      value: '',
+      value: '' + transaction.amount || '',
       error: ''
     }
   }
-  const [formState, setFormState] = useState(defaultFormState)  
+  const [formState, setFormState] = useState(defaultFormState)
 
-  useEffect(() => {
-    if(location.search.length > 0) {      
-      const parsed = queryString.parse(location.search);
-      const newState = {
-        ...formState
-      }
-      newState.name.value = parsed.name
-      newState.amount.value = parsed.amount
-      setFormState({ ...newState })
-    }
-  }, [])
-
-  const getUsers = (e) => {
-    const str = e.target.value
-    fetch(api.userListUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-        'Authorization': 'Bearer ' + user.token,
-      },
-      body: JSON.stringify({
-        filter: str
-      })
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((json)=>{          
-          setUserList(json)
-        })
-      }
-      else {
-        res.text().then((text) => {
-          console.log(`Error: ${text}`)
-        })
-      }
-    })
-  }
+  const canSubmit = useMemo(() => {
+    return formState.name.value.length > 0
+      && formState.amount.value.length > 0
+      && formState.name.error.length === 0
+      && formState.amount.error.length === 0
+  }, [formState])
 
   const handleChange = (e) => {
     const newState = {
@@ -89,121 +39,77 @@ const TransactionPage = ({location}) => {
     }
     newState[e.target.name].value = e.target.value.trim()
     newState[e.target.name].error = ''
-    newState.responseMessage = ''
+    newState.errorMessage = ''
     setFormState({ ...newState })
   }
 
-  const validateName = () => {
-    const name = formState.name.value
-    let nameError = '';
-
-    if (name.length === 0) {
-      nameError = 'User name is required'
+  const handleValidation = (target, type) => {
+    const newState = {
+      ...formState
     }
-
-    if (nameError.length > 0) {
-      const newState = {
-        ...formState
-      }
-      newState.name.error = nameError
-      setFormState({ ...newState })
+    const values = [target.value]
+    if (type == 'amount') {
+      values.push(user.balance)
     }
-  }
-
-  const validateAmount = () => {
-    const amount = formState.amount.value
-    let amountError = '';
-
-    if (amount.length === 0) {
-      amountError = 'Amount is required'
-    }
-    else if (amount < 1) {
-      amountError = 'Wrong amount value'
-    }
-    else if (amount > user.balance) {
-      amountError = 'You haven\'t anough PW'
-    }
-
-    if (amountError.length > 0) {
-      const newState = {
-        ...formState
-      }
-      newState.amount.error = amountError
-      setFormState({ ...newState })
-    }
+    newState[target.name].error = validate(values, type)
+    setFormState({ ...newState })
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    fetch(api.transactionUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-        'Authorization': 'Bearer ' + user.token,
-      },
-      body: JSON.stringify({
-        name: formState.name.value,
-        amount: formState.amount.value,
-      })
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((json)=>{
-          setFormState(defaultFormState)
-          setIsSuccess(true)
-          setTimeout(() => {
-            setIsSuccess(false)            
-          }, 4000);
-        })
+    const result = dispatch(newTransaction({
+      name: formState.name.value,
+      amount: formState.amount.value
+    }))
+    result.then((res) => {
+      if (res.payload) {
+        const newState = {
+          ...formState
+        }        
+        newState.name.value = ''
+        newState.amount.value = ''
+        setFormState({ ...newState })
       }
-      else {
-        res.text().then((text) => {
-          setFormState({...formState, responseMessage: `Error: ${text}`})
-        })
-      }
-    })    
+    })
   }
 
-  return ( 
+  return (
     <div className="container">
       <Box className={classes.root}>
         <h1>New transaction</h1>
-        <Box color="error.main" className={classes.responseError}>          
-          {formState.responseMessage}
-        </Box>
-        {isSuccess &&
-          <Alert severity="success">Success!</Alert>
+        {transaction.message.text &&
+          <Alert severity={transaction.message.type} className={classes.alert}>{transaction.message.text}</Alert>
         }
         <form
           className={classes.form}
           autoComplete="off"
           onSubmit={handleSubmit}
-        >          
+        >
           <Autocomplete
             freeSolo
-            options={userList.map((user) => user.name)}
+            options={transaction.userList.map((user) => user.name)}
             onChange={(event, newValue) => {
               const newState = {
                 ...formState
               }
               newState.name.value = newValue
               newState.name.error = ''
-              newState.responseMessage = ''
               setFormState({ ...newState })
             }}
             inputValue={formState.name.value}
             renderInput={(params) => (
-              <TextField 
+              <TextField
                 name="name"
-                {...params} 
-                label="User name" 
+                {...params}
+                label="User name"
                 className={classes.input}
                 error={formState.name.error.length > 0}
                 helperText={formState.name.error}
-                onChange={(e)=>{
+                onChange={(e) => {
                   handleChange(e)
-                  getUsers(e)
+                  dispatch(getUserList({ filter: e.target.value }))
                 }}
-                onBlur={validateName}        
+                onBlur={(e) => handleValidation(e.target, 'name')}
               />
             )}
           />
@@ -215,21 +121,21 @@ const TransactionPage = ({location}) => {
             error={formState.amount.error.length > 0}
             helperText={formState.amount.error}
             onChange={handleChange}
-            onBlur={validateAmount}
+            onBlur={(e) => handleValidation(e.target, 'amount')}
             value={formState.amount.value}
           />
           <Button
             variant="contained"
             color="primary"
             type="submit"
-            disabled={formState.name.value.length === 0 || formState.name.value.length === 0 || formState.amount.error.length > 0 || formState.amount.error.length > 0}
+            disabled={!canSubmit}
           >
             Send PW
           </Button>
         </form>
       </Box>
     </div>
-   );
+  );
 }
- 
-export default TransactionPage;
+
+export default WrapForm(TransactionPage);

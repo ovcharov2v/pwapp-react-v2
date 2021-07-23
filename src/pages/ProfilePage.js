@@ -1,8 +1,9 @@
-import React, { useContext, useEffect } from 'react'
-import UserContext from '../context'
+import React, { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Button } from '@material-ui/core/'
 import { NavLink } from 'react-router-dom'
+import {useDispatch, useSelector} from 'react-redux'
+import {info} from '../store/slices/user'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,13 +26,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const ProfilePage = ({ getUserInfo }) => {
-  const { user, setUser } = useContext(UserContext)
+const ProfilePage = () => {
   const classes = useStyles()
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.user)
 
   useEffect(() => {
-    getUserInfo()
-  }, [])
+    dispatch(info())
+  }, [])  
 
   return (
     <Box className={classes.root}>
@@ -59,7 +61,7 @@ const ProfilePage = ({ getUserInfo }) => {
         </Button>
       </div>
     </Box>
-  );
+  )
 }
 
 export default ProfilePage;

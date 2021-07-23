@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LeftMenu = ({leftMenuOpen, toggleLeftMenu}) => {
+const LeftMenu = ({isOpen, toggleLeftMenu}) => {
   const classes = useStyles()
 
   const MenuLink = ({text, link}) => {
@@ -54,7 +54,7 @@ const LeftMenu = ({leftMenuOpen, toggleLeftMenu}) => {
     <Drawer
       variant="persistent"
       anchor="left"
-      open={leftMenuOpen}
+      open={isOpen}
     >
       <div className={classes.drawer}>
         <div className={classes.drawerTop}>

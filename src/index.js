@@ -1,26 +1,19 @@
-import React, {useState} from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
-import UserContext from './context'
 import 'normalize.css'
 import '@fontsource/roboto';
 import './index.scss'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+import store from './store/store'
+import {Provider} from 'react-redux'
 
 function Main() {
-  const [user, setUser] = useState({
-    isLoggedIn: false,
-    id: null,
-    userName: null,
-    email: null,
-    balance: null,
-    token: null,
-  })
   return (    
     <React.StrictMode> 
-      <UserContext.Provider value={{user, setUser}}>
-        <App />
-      </UserContext.Provider>    
+      <Provider store={store}>
+          <App />
+      </Provider>    
     </React.StrictMode>
   )
 }
