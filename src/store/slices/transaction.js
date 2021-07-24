@@ -12,6 +12,11 @@ const initialState = {
   amount: null,
   userList: [],
   transactionList: [],
+  transformedTransactionList: [],
+  sort: {
+    by: 'date',
+    dir: 'desc'
+  }
 }
 
 export const getUserList = createAsyncThunk('transaction/getUserList',
@@ -90,6 +95,29 @@ const transaction = createSlice({
       state.name = action.payload.name
       state.amount = action.payload.amount
     },
+    sortTransactionList(state, action) {
+      const sortedArr = [...state.transactionList]
+      state.sort.by = action.payload.sortBy
+      state.sort.dir = action.payload.sortDir
+      switch(state.sort.by) {
+        case 'name':
+          sortedArr.sort(( a, b ) =>  a.username.localeCompare(b.username))
+          break
+        case 'amount':
+          sortedArr.sort(( a, b ) =>  Math.abs(a.amount) - Math.abs(b.amount))
+          break
+        case 'balance':
+          sortedArr.sort(( a, b ) =>  a.balance - b.balance)
+          break
+        case 'date':
+        default:
+          sortedArr.sort((a,b)=>new Date(b.date) - new Date(a.date))
+      }
+      if(state.sort.dir==='asc') {
+        sortedArr.reverse()
+      }
+      state.transformedTransactionList = sortedArr
+    },
   },
   extraReducers: {
     [getUserList.fulfilled]: (state, action) => {
@@ -100,6 +128,7 @@ const transaction = createSlice({
     },
     [getTransactionList.fulfilled]: (state, action) => {
       state.transactionList = action.payload.trans_token
+      state.transformedTransactionList = [...action.payload.trans_token].sort((a,b)=>new Date(b.date) - new Date(a.date));      
     },
     [getTransactionList.rejected]: (state, action) => {
       state.transactionList = []
@@ -107,5 +136,5 @@ const transaction = createSlice({
   },
 })
 
-export const { setMessage, setTransactionData } = transaction.actions
+export const { setMessage, setTransactionData, sortTransactionList } = transaction.actions
 export default transaction.reducer
