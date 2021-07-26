@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 
 const WrapForm = (Component) => {  
 
-  const Wrap = () => {    
+  const FormWrapper = () => {    
     const classes = useStyles()
 
     return (
@@ -45,7 +45,7 @@ const WrapForm = (Component) => {
     );
   }
 
-  return Wrap
+  return FormWrapper
 }
 
 export default WrapForm;

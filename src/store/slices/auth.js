@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { userLoginFetch } from '../../api/userLogin'
 import { userRegisterFetch } from '../../api/userRegister'
 import jwt_decode from 'jwt-decode'
+import { setMessage } from './message'
 
 const initialState = {
   error: null,
@@ -14,11 +15,11 @@ export const login = createAsyncThunk('auth/login',
       const response = await userLoginFetch(dispatch.email, dispatch.password)
       if (response.ok) {
         const res = await response.json()
-        data.dispatch(setToken(res.id_token))
+        data.dispatch(setToken(res.id_token))        
       }
       else {
         const res = await response.text()
-        data.dispatch(setError(res))
+        data.dispatch(setMessage({text: res, type:'error'}))
       }
     }
     catch (error) {
@@ -37,7 +38,7 @@ export const register = createAsyncThunk('auth/register',
       }
       else {
         const res = await response.text()
-        data.dispatch(setError(res))
+        data.dispatch(setMessage({text: res, type:'error'}))
       }
     }
     catch (error) {
@@ -50,12 +51,6 @@ const auth = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setError(state, action) {
-      state.error = action.payload
-    },
-    clearError(state, action) {
-      state.error = ''
-    },
     setToken(state, action) {
       state.token = action.payload
       localStorage.setItem('token', action.payload)
@@ -80,5 +75,5 @@ const auth = createSlice({
   },
 })
 
-export const { setError, clearError, logout, autoLogin, setToken } = auth.actions
+export const { logout, autoLogin, setToken } = auth.actions
 export default auth.reducer

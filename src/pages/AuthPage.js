@@ -3,14 +3,16 @@ import WrapForm from '../components/hoc/WrapForm'
 import { Box, Button, TextField, Divider } from '@material-ui/core/'
 import Alert from '@material-ui/lab/Alert'
 import {useDispatch, useSelector} from 'react-redux'
-import {login, register, clearError} from '../store/slices/auth'
+import {login, register} from '../store/slices/auth'
 import { validate } from '../validators'
+import WrapPage from '../components/hoc/WrapPage'
+import {clearMessage} from '../store/slices/message'
 
 const AuthPage = ({classes}) => { 
   const dispatch = useDispatch()
-  const error = useSelector(state=>state.auth.error)
+  const message = useSelector(state=>state.message.message)
 
-  const [formState, setFormState] = useState({
+  const defaultFormState = {
     mode: 'login',
     name: {
       value: '',
@@ -28,7 +30,9 @@ const AuthPage = ({classes}) => {
       value: '',
       error: '',
     },
-  })  
+  }
+
+  const [formState, setFormState] = useState(defaultFormState)  
 
   const canSubmit = useMemo(()=>{
     if(formState.mode === 'login') {
@@ -56,7 +60,7 @@ const AuthPage = ({classes}) => {
     newState[e.target.name].value = e.target.value
     newState[e.target.name].error = ''
     setFormState({ ...newState })
-    dispatch(clearError())
+    dispatch(clearMessage())
   }
 
   const handleValidation = (target, type) => {
@@ -91,14 +95,15 @@ const AuthPage = ({classes}) => {
 
   const toggleFormMode = () => {
     const mode = formState.mode === 'login' ? 'register' : 'login'
-    setFormState({...formState, mode: mode})
+    setFormState({...formState, mode: mode})    
+    dispatch(clearMessage())
   }
   
   return (
     <Box className={classes.root}>
       <h1 className={classes.header}>{formState.mode}</h1>
-      {error &&
-        <Alert severity='error' className={classes.alert}>{error}</Alert>
+      {message.text &&
+        <Alert severity={message.type} className={classes.alert}>{message.text}</Alert>
       }
       <form
         className={classes.form}
@@ -177,4 +182,4 @@ const AuthPage = ({classes}) => {
   );
 }
 
-export default WrapForm(AuthPage)
+export default WrapPage(WrapForm(AuthPage))

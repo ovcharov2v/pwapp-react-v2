@@ -4,6 +4,7 @@ import { Box, Button } from '@material-ui/core/'
 import { NavLink } from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {info} from '../store/slices/user'
+import WrapPage from '../components/hoc/WrapPage'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,4 +65,4 @@ const ProfilePage = () => {
   )
 }
 
-export default ProfilePage;
+export default WrapPage(ProfilePage);

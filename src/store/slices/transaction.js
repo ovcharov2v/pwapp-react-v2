@@ -2,12 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { getUserListFetch } from '../../api/getUserList'
 import { createTransactionFetch } from '../../api/createTransaction'
 import { getTransactionListFetch } from '../../api/getTransactionList'
+import { setMessage } from './message'
 
 const initialState = {
-  message: {
-    text: null,
-    type: null
-  },
   name: null,
   amount: null,
   userList: [],
@@ -34,6 +31,7 @@ export const getUserList = createAsyncThunk('transaction/getUserList',
       else {
         const res = await response.text()
         data.dispatch(setMessage({ text: res, type: 'error' }))
+        data.dispatch(clearUserList())
       }
     }
     catch (error) {
@@ -49,7 +47,8 @@ export const newTransaction = createAsyncThunk('transaction/newTransaction',
       const response = await createTransactionFetch(state.auth.token, dispatch.name, dispatch.amount)
       if (response.ok) {
         const res = await response.json()
-        data.dispatch(setMessage({ text: `Successfully send ${Math.abs(res.trans_token.amount)}PW to ${res.trans_token.username}`, type: 'success' }))
+        data.dispatch(setMessage({ text: `Successfully send ${Math.abs(res.trans_token.amount)}PW to ${res.trans_token.username}`, type: 'success' }))        
+        data.dispatch(clearUserList())
         return res
       }
       else {
@@ -87,10 +86,6 @@ const transaction = createSlice({
   name: 'transaction',
   initialState,
   reducers: {
-    setMessage(state, action) {
-      state.message.text = action.payload.text
-      state.message.type = action.payload.type
-    },
     setTransactionData(state, action) {
       state.name = action.payload.name
       state.amount = action.payload.amount
@@ -118,6 +113,9 @@ const transaction = createSlice({
       }
       state.transformedTransactionList = sortedArr
     },
+    clearUserList(state, action) {
+      state.userList = []
+    },
   },
   extraReducers: {
     [getUserList.fulfilled]: (state, action) => {
@@ -136,5 +134,5 @@ const transaction = createSlice({
   },
 })
 
-export const { setMessage, setTransactionData, sortTransactionList } = transaction.actions
+export const { setTransactionData, sortTransactionList, clearUserList } = transaction.actions
 export default transaction.reducer

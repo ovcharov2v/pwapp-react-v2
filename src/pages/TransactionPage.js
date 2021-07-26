@@ -5,14 +5,14 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import Alert from '@material-ui/lab/Alert'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUserList, newTransaction } from '../store/slices/transaction'
-import { validate } from '../validators/'
-
-
+import WrapPage from '../components/hoc/WrapPage'
+import {clearMessage} from '../store/slices/message'
 
 const TransactionPage = ({classes}) => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user)
   const transaction = useSelector((state) => state.transaction)
+  const message = useSelector(state=>state.message.message)
 
   const defaultFormState = {
     name: {
@@ -41,6 +41,7 @@ const TransactionPage = ({classes}) => {
     newState[e.target.name].error = ''
     newState.errorMessage = ''
     setFormState({ ...newState })
+    dispatch(clearMessage())
   }
 
   const handleValidation = (target, type) => {
@@ -50,8 +51,7 @@ const TransactionPage = ({classes}) => {
     const values = [target.value]
     if (type == 'amount') {
       values.push(user.balance)
-    }
-    newState[target.name].error = validate(values, type)
+    }    
     setFormState({ ...newState })
   }
 
@@ -77,8 +77,8 @@ const TransactionPage = ({classes}) => {
     <div className="container">
       <Box className={classes.root}>
         <h1>New transaction</h1>
-        {transaction.message.text &&
-          <Alert severity={transaction.message.type} className={classes.alert}>{transaction.message.text}</Alert>
+        {message.text &&
+          <Alert severity={message.type} className={classes.alert}>{message.text}</Alert>
         }
         <form
           className={classes.form}
@@ -138,4 +138,4 @@ const TransactionPage = ({classes}) => {
   );
 }
 
-export default WrapForm(TransactionPage);
+export default WrapPage(WrapForm(TransactionPage));

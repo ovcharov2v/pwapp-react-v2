@@ -5,6 +5,7 @@ import RepeatIcon from '@material-ui/icons/Repeat';
 import { getTransactionList, setTransactionData, sortTransactionList } from '../store/slices/transaction'
 import { Link as RouterLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import WrapPage from '../components/hoc/WrapPage';
 
 const useStyles = makeStyles({
   tableWrapper: {
@@ -126,4 +127,4 @@ const HistoryPage = () => {
   );
 }
 
-export default HistoryPage;
+export default WrapPage(HistoryPage);
