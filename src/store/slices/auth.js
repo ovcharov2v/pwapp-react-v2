@@ -69,8 +69,8 @@ const auth = createSlice({
   },
   extraReducers: {
     [register.fulfilled]: (state, action) => {
-      state.token = action.payload.id_token
-      localStorage.setItem('token', action.payload.id_token)
+      //state.token = action.payload.id_token
+      //localStorage.setItem('token', action.payload.id_token)
     },
   },
 })
